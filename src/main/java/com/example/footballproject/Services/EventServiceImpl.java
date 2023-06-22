@@ -1,9 +1,9 @@
 package com.example.footballproject.Services;
 
-import com.example.footballproject.Entities.Ev;
 import com.example.footballproject.Entities.Event;
-import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -13,24 +13,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class EventServiceImpl implements EventService{
+public class EventServiceImpl implements EventService {
+
+    @Value("${filepath}")
+    private String filepath;
 
     @Override
-    public List<Event> getEventFromJSONFile(int number) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+    public List<Event> getEventFromJSONFile(int number) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        List<Event> events = mapper.readValue(new File(filepath), new TypeReference<List<Event>>() {
+        });
+        return events.stream()
+                .sorted(Comparator
+                        .comparingDouble(x ->
+                                Math.min(x.getProbability_home_team_winner(),
+                                        Math.min(x.getProbability_away_team_winner(), x.getProbability_draw()))))
+                .limit(number)
+                .collect(Collectors.toList());
 
-            Ev events = mapper.readValue(new File("./src/main/resources/data.json"), Ev.class);
-            return events.getEvents().stream().sorted(Comparator
-                    .comparingDouble(x->Math.min(x.getProbability_home_team_winner(),
-                            Math.min(x.getProbability_away_team_winner(),x.getProbability_draw())))).limit(number).collect(Collectors.toList());
-
-        } catch (
-                IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
     }
 }

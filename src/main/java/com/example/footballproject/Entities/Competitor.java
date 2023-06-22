@@ -14,14 +14,8 @@ public class Competitor {
     private String abbreviation;
     private String qualifier;
     private String gender;
-    public Competitor(){
+
+    public Competitor() {
 
     }
-//    "id": "sr:competitor:37863",
-//            "name": "SS Folgore Falciano Calcio",
-//            "country": "San Marino",
-//            "country_code": "SMR",
-//            "abbreviation": "FFC",
-//            "qualifier": "home",
-//            "gender": "male"
 }
